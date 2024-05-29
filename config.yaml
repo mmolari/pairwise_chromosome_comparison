@@ -1,0 +1,8 @@
+original_names:
+  ref: "U00096.3 Escherichia coli str. K-12 substr. MG1655, complete genome"
+  A: "contig_3_pilon_pilon_pilon_pilon_pilon"
+  B1: "contig_1_pilon_pilon"
+  B2: "contig_2_pilon_pilon"
+
+comparisons:
+  CA: ["ref", "A"]

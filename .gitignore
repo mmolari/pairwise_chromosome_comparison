@@ -1,0 +1,5 @@
+/results
+/.snakemake
+/data/*
+/exploration
+/original_data.tar.xz
