@@ -30,17 +30,40 @@ snakemake -c1 all
 
 ## results
 
+For any given comparison, the pipeline produces the following results, stored in the `results/{comp_id}` folder.
 
+### block statistics
 
+The `block_stats.csv` file contains a list of all of the blocks in the graph with summary statistics:
+
+|            | count | n. strains |    len | duplicated | core  | category   |
+| :--------- | ----: | ---------: | -----: | :--------- | :---- | :--------- |
+| OGIXJBTVTV |     2 |          2 | 326946 | False      | True  | core       |
+| XEVNWFKICB |     2 |          2 | 224824 | False      | True  | core       |
+| IRWDQBJGUJ |     2 |          2 | 224159 | False      | True  | core       |
+| YTFFFPIQSD |     1 |          1 |   1418 | False      | False | accessory  |
+| UZWIYCEDJP |     1 |          1 |    869 | False      | False | accessory  |
+| UJFECAATVC |    23 |          2 |   1055 | True       | False | duplicated |
+| NPESBINNJX |    21 |          2 |    142 | True       | False | duplicated |
+| NBPXZUNQOA |    14 |          2 |   3243 | True       | False | duplicated |
+
+- the block **count** is the total number of occurrences of the block in the two paths.
+- the block **n. of strains** is the number of strains in which the block appears, either one or two.
+- the block **length** is the length of the block consensus sequence.
+- the **duplicated** flag indicates whether the block occurrs twice in any path.
+- the **core** flag indicates block that are found exactly once in each genome.
+- the **category** value can be either *core*, *accessory* (for blocks that are found only once in a path but not the other) or *duplicated*
 
 
 ## ToDo
 
 - [x] extract alignments of all core regions
 - [x] extract list of mutations: three dataframes: SNPs, insertions and deletions for core blocks.
-- [ ] dotplot
-  - [ ] add private segments on the sides (sub-plots)
-  - [ ] add periodic boundary conditions
+- [x] dotplot
+  - [x] add private segments on the sides (sub-plots)
+  - [x] add periodic boundary conditions
 - [x] block stats
 - [x] core alignments
 - [ ] detect non-syntenic duplications by gluing the paths
+- [ ] position in the genome for the mutations / indels
+- [ ] block list with positions in the two genomes
