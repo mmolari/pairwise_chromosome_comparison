@@ -1,6 +1,25 @@
 configfile: "config.yaml"
 
 
+comps = config["comparisons"].keys()
+all_samples = set([s for c in comps for s in config["comparisons"][c]])
+
+print(all_samples)
+
+
+rule seq_lengths:
+    input:
+        fas=expand("data/{sample}.fa", sample=all_samples),
+    output:
+        "results/seq_lengths.csv",
+    shell:
+        """
+        python scripts/seq_lengths.py \
+            --fastas {input.fas} \
+            --out {output}
+        """
+
+
 rule build_graph:
     input:
         ref=lambda w: f'data/{config["comparisons"][w.comp][0]}.fa',
@@ -60,7 +79,19 @@ rule core_alignments:
         """
 
 
-comps = config["comparisons"].keys()
+rule dotplot:
+    input:
+        pan=rules.build_graph.output,
+        lens="results/seq_lengths.csv",
+    output:
+        "results/{comp}/dotplot.html",
+    shell:
+        """
+        python scripts/dotplot.py \
+            --graph {input.pan} \
+            --seq_lengths {input.lens} \
+            --output {output}
+        """
 
 
 rule all:
@@ -68,3 +99,4 @@ rule all:
         expand(rules.block_stats.output, comp=comps),
         expand(rules.export_gfa.output, comp=comps),
         expand(rules.core_alignments.output, comp=comps),
+        expand(rules.dotplot.output, comp=comps),
