@@ -32,9 +32,10 @@ snakemake -c1 all
 
 
 
-## notes
 
-What is useful?
+
+## ToDo
+
 - [x] extract alignments of all core regions
 - [x] extract list of mutations: three dataframes: SNPs, insertions and deletions for core blocks.
 - [ ] dotplot
@@ -42,3 +43,4 @@ What is useful?
   - [ ] add periodic boundary conditions
 - [x] block stats
 - [x] core alignments
+- [ ] detect non-syntenic duplications by gluing the paths

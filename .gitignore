@@ -1,5 +1,6 @@
 /results
 /.snakemake
 /data/*
-/exploration
+/exploration/*
+!/exploration/*.py
 /original_data.tar.xz
