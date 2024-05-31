@@ -2,22 +2,6 @@ configfile: "config.yaml"
 
 
 comps = config["comparisons"].keys()
-all_samples = set([s for c in comps for s in config["comparisons"][c]])
-
-print(all_samples)
-
-
-rule seq_lengths:
-    input:
-        fas=expand("data/{sample}.fa", sample=all_samples),
-    output:
-        "results/seq_lengths.csv",
-    shell:
-        """
-        python scripts/seq_lengths.py \
-            --fastas {input.fas} \
-            --out {output}
-        """
 
 
 rule build_graph:
@@ -35,6 +19,19 @@ rule build_graph:
             -b 5 \
             {input.ref} {input.qry} \
             > {output.pan}
+        """
+
+
+rule seq_lengths:
+    input:
+        rules.build_graph.input,
+    output:
+        "results/{comp}/seq_lengths.csv",
+    shell:
+        """
+        python scripts/seq_lengths.py \
+            --fastas {input} \
+            --out {output}
         """
 
 
@@ -82,7 +79,7 @@ rule core_alignments:
 rule dotplot:
     input:
         pan=rules.build_graph.output,
-        lens="results/seq_lengths.csv",
+        lens=rules.seq_lengths.output,
     output:
         "results/{comp}/dotplot.html",
     shell:
@@ -94,9 +91,23 @@ rule dotplot:
         """
 
 
+rule block_positions:
+    input:
+        pan=rules.build_graph.output,
+    output:
+        "results/{comp}/block_positions.csv",
+    shell:
+        """
+        python scripts/block_positions.py \
+            --graph {input.pan} \
+            --out {output}
+        """
+
+
 rule all:
     input:
         expand(rules.block_stats.output, comp=comps),
         expand(rules.export_gfa.output, comp=comps),
         expand(rules.core_alignments.output, comp=comps),
         expand(rules.dotplot.output, comp=comps),
+        expand(rules.block_positions.output, comp=comps),
