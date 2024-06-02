@@ -66,4 +66,10 @@ The `block_stats.csv` file contains a list of all of the blocks in the graph wit
 - [x] core alignments
 - [ ] detect non-syntenic duplications by gluing the paths
 - [ ] position in the genome for the mutations / indels
-- [ ] block list with positions in the two genomes
+  - [ ] use the block positions dataframe already created, with `(iso, block_id, block_occ)` as index.
+  - [ ] define a function to find location within the alignment on the sequence (add/remove indels to position).
+- [x] block list with positions in the two genomes
+- [ ] note with better description of the results
+  - [ ] block positions
+  - [ ] graph export (gfa and sequences)
+  - [ ] core alignments and list of mutations

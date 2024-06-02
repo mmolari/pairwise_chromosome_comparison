@@ -41,7 +41,7 @@ def extract_variations(aln):
         iso, num, strand = k
         for m in ms:
             pos, alt = m
-            M.append((cb, iso, num, pos, alt))
+            M.append((cb, iso, num, strand, pos, alt))
 
     for k, ii in aln.ins.items():
         iso, num, strand = k
@@ -49,13 +49,13 @@ def extract_variations(aln):
             P, seq = i
             pos, ins_start = P
             L = len(seq)
-            I.append((cb, iso, num, pos, ins_start, L, seq))
+            I.append((cb, iso, num, strand, pos, ins_start, L, seq))
 
     for k, ds in aln.dels.items():
         iso, num, strand = k
         for d in ds:
             d_start, d_len = d
-            D.append((cb, iso, num, d_start, d_len))
+            D.append((cb, iso, num, strand, d_start, d_len))
 
     return M, I, D
 
@@ -95,15 +95,42 @@ if __name__ == "__main__":
         dels += D
 
     # finalize and save mutation dataframes
-    snps = pd.DataFrame(snps, columns=["block_id", "iso", "block_num", "pos", "alt"])
+    snps = pd.DataFrame(
+        snps,
+        columns=[
+            "block_id",
+            "iso",
+            "block_num",
+            "strand",
+            "block_aln_pos",
+            "alt",
+        ],
+    )
     ins = pd.DataFrame(
         ins,
-        columns=["block_id", "iso", "block_num", "pos", "ins_start", "ins_len", "seq"],
+        columns=[
+            "block_id",
+            "iso",
+            "block_num",
+            "strand",
+            "block_aln_pos",
+            "ins_start",
+            "ins_len",
+            "seq",
+        ],
     )
     dels = pd.DataFrame(
-        dels, columns=["block_id", "iso", "block_num", "pos", "del_len"]
+        dels,
+        columns=[
+            "block_id",
+            "iso",
+            "block_num",
+            "strand",
+            "block_aln_pos",
+            "del_len",
+        ],
     )
 
-    snps.to_csv(aln_fld / "snps.csv", index=False)
-    ins.to_csv(aln_fld / "ins.csv", index=False)
-    dels.to_csv(aln_fld / "dels.csv", index=False)
+    snps.to_csv(aln_fld / "snps.csv")
+    ins.to_csv(aln_fld / "ins.csv")
+    dels.to_csv(aln_fld / "dels.csv")

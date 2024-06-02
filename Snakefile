@@ -79,14 +79,14 @@ rule core_alignments:
 rule dotplot:
     input:
         pan=rules.build_graph.output,
-        lens=rules.seq_lengths.output,
+        lengths=rules.seq_lengths.output,
     output:
         "results/{comp}/dotplot.html",
     shell:
         """
         python scripts/dotplot.py \
             --graph {input.pan} \
-            --seq_lengths {input.lens} \
+            --seq_lengths {input.lengths} \
             --output {output}
         """
 
@@ -104,10 +104,30 @@ rule block_positions:
         """
 
 
+rule mutations_positions:
+    input:
+        pan=rules.build_graph.output,
+        lengths=rules.seq_lengths.output,
+        alns=rules.core_alignments.output,
+        bpos=rules.block_positions.output,
+    output:
+        "results/{comp}/mutations_positions.csv",
+    shell:
+        """
+        python scripts/mutations_positions.py \
+            --graph {input.pan} \
+            --lengths {input.lengths} \
+            --core_alignments {input.alns} \
+            --block_positions {input.bpos} \
+            --out_csv {output}
+        """
+
+
 rule all:
     input:
         expand(rules.block_stats.output, comp=comps),
         expand(rules.export_gfa.output, comp=comps),
-        expand(rules.core_alignments.output, comp=comps),
+        # expand(rules.core_alignments.output, comp=comps),
         expand(rules.dotplot.output, comp=comps),
-        expand(rules.block_positions.output, comp=comps),
+        # expand(rules.block_positions.output, comp=comps),
+        expand(rules.mutations_positions.output, comp=comps),
