@@ -4,3 +4,4 @@
 /exploration/*
 !/exploration/*.py
 /original_data.tar.xz
+/scripts/__pycache__
