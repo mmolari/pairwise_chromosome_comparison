@@ -4,8 +4,7 @@ from collections import defaultdict
 import itertools as itt
 import plotly.graph_objects as go
 import plotly.subplots as sp
-from dataclasses import dataclass
-import copy
+import segment_utils as su
 import argparse
 
 
@@ -33,76 +32,19 @@ def position_dictionary(pan):
     return pos
 
 
-@dataclass
-class Segment:
-    s1: int
-    e1: int
-    s2: int
-    e2: int
-    orient: bool
-    L1: int
-    L2: int
-
-    def x(self):
-        return (self.s1, self.e1)
-
-    def y(self):
-        return (self.s2, self.e2) if self.orient else (self.e2, self.s2)
-
-    def dx(self):
-        return (self.e1 - self.s1) % self.L1
-
-    def dy(self):
-        return (self.e2 - self.s2) % self.L2
-
-    def m(self):
-        m = self.dy() / self.dx()
-        return m if self.orient else -m
-
-    def x_runover(self):
-        return self.s1 > self.e1
-
-    def y_runover(self):
-        return self.s2 > self.e2
-
-    def split_x(self):
-        assert self.x_runover()
-        Sa, Sb = copy.copy(self), copy.copy(self)
-        Sa.e1 = self.L1
-        Sb.s1 = 0
-        if self.orient:
-            Sa.e2 = Sa.s2 + (Sa.e1 - Sa.s1) * self.m()
-            Sb.s2 = Sb.e2 - (Sb.e1 - Sb.s1) * self.m()
-        else:
-            Sa.s2 = Sa.e2 + (Sa.e1 - Sa.s1) * self.m()
-            Sb.e2 = Sb.s1 - (Sb.e1 - Sb.s1) * self.m()
-
-        return [Sa, Sb]
-
-    def split_y(self):
-        assert self.y_runover()
-        Sa, Sb = copy.copy(self), copy.copy(self)
-        Sa.e2 = self.L2
-        Sb.s2 = 0
-        if self.orient:
-            Sa.e1 = Sa.s1 + (Sa.e2 - Sa.s2) / self.m()
-            Sb.s1 = Sb.e1 - (Sb.e2 - Sb.s2) / self.m()
-        else:
-            Sa.s1 = Sa.e1 + (Sa.e2 - Sa.s2) / self.m()
-            Sb.e1 = Sb.s1 - (Sb.e2 - Sb.s2) / self.m()
-
-        return [Sa, Sb]
-
-
 def display_line(bid, seg, color, lg, text, fig):
     kwargs = dict(color=color, lg=lg, text=text, fig=fig)
-    if seg.s1 > seg.e1:
+    if seg.x_runover():
         for s in seg.split_x():
             display_line(bid, s, **kwargs)
-    elif seg.s2 > seg.e2:
+    elif seg.y_runover():
         for s in seg.split_y():
             display_line(bid, s, **kwargs)
     else:
+        if seg.e1 == 0:
+            seg.e1 = seg.L1
+        if seg.e2 == 0:
+            seg.e2 = seg.L2
         fig.add_trace(
             go.Scatter(
                 x=seg.x(),
@@ -119,29 +61,6 @@ def display_line(bid, seg, color, lg, text, fig):
             row=1,
             col=2,
         )
-
-
-@dataclass
-class PrivSegment:
-    s: int
-    e: int
-    L: int
-
-    def x(self):
-        return (self.s, self.e)
-
-    def dx(self):
-        return (self.e - self.s) % self.L
-
-    def x_runover(self):
-        return self.s > self.e
-
-    def split_x(self):
-        assert self.x_runover()
-        Sa, Sb = copy.copy(self), copy.copy(self)
-        Sa.e = self.L
-        Sb.s = 0
-        return [Sa, Sb]
 
 
 def display_private_line(bid, seg, color, lg, text, fig, kind):
@@ -229,7 +148,7 @@ def create_dotplot(pos, Ls):
             else:
                 lg = "fwd" if orient else "inverted"
 
-            seg = Segment(start1, end1, start2, end2, orient, Ls[p1], Ls[p2])
+            seg = su.Segment(start1, end1, start2, end2, orient, Ls[p1], Ls[p2])
             color = colors[lg]
             display_line(bid, seg, color, lg, text, fig)
 
@@ -241,7 +160,7 @@ def create_dotplot(pos, Ls):
             dupl = len(l) > 1
             for a in l:
                 start, end, strand, occ = a
-                seg = PrivSegment(start, end, Ls[pid])
+                seg = su.PrivSegment(start, end, Ls[pid])
                 pm = "+" if strand == 1 else "-"
                 text = f"{bid} # {pm}|{occ}"
 

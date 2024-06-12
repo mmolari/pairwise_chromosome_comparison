@@ -55,11 +55,13 @@ class Path:
     nodes: list[Node]
     node_pos: dict[Node, int]
     msu: list[int]
+    signature: list[int]
 
     def __init__(self, nodes: list[Node]) -> None:
         self.nodes = nodes
         self.node_pos = {n: i for i, n in enumerate(nodes)}
         self.msu = [0] * len(nodes)
+        self.signature = [0] * len(nodes)
 
     def __repr__(self) -> str:
         return "---".join([str(n) for n in self.nodes])
@@ -94,8 +96,10 @@ class Path:
     def get_msu(self, node: Node) -> int:
         return self.msu[self.node_pos[node]]
 
-    def set_msu(self, node: Node, msu_id: int) -> None:
-        self.msu[self.node_pos[node]] = msu_id
+    def set_msu(self, node: Node, msu_id: int, signature: int) -> None:
+        idx = self.node_pos[node]
+        self.msu[idx] = msu_id
+        self.signature[idx] = signature
 
     def remap_msu(self, old_id: int, new_id: int) -> None:
         for i, msu in enumerate(self.msu):
@@ -106,6 +110,7 @@ class Path:
         data = [n.__dict__ for n in self.nodes]
         df = pd.DataFrame(data)
         df["msu"] = self.msu
+        df["signature"] = self.signature
         return df
 
 
@@ -141,8 +146,9 @@ class Glue:
 
         # if both are unassigned, extend
         vprint(f"Assigning msu of focal nodes {n1} and {n2} to {msu_id}", indent=1)
-        self.path1.set_msu(n1, msu_id)
-        self.path2.set_msu(n2, msu_id)
+        signature = hash((n1, n2))
+        self.path1.set_msu(n1, msu_id, signature)
+        self.path2.set_msu(n2, msu_id, signature)
         c1 = self.glue_side(n1, n2, True, msu_id)
         c2 = self.glue_side(n1, n2, False, msu_id)
 
@@ -185,8 +191,9 @@ class Glue:
                 else:
                     return None
             vprint(f"Assigning {nn1} and {nn2} to {msu_id}", indent=3)
-            self.path1.set_msu(nn1, msu_id)
-            self.path2.set_msu(nn2, msu_id)
+            signature = hash((nn1, nn2))
+            self.path1.set_msu(nn1, msu_id, signature)
+            self.path2.set_msu(nn2, msu_id, signature)
             n1, n2 = nn1, nn2
 
     def to_df(self) -> pd.DataFrame:

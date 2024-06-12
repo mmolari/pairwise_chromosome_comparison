@@ -136,6 +136,23 @@ rule minimal_synteny_units:
         """
 
 
+rule msu_dotplot:
+    input:
+        msu=rules.minimal_synteny_units.output,
+        pan=rules.build_graph.output,
+        lengths=rules.seq_lengths.output,
+    output:
+        "results/{comp}/msu/dotplot.pdf",
+    shell:
+        """
+        python scripts/msu_dotplot.py \
+            --msu {input.msu} \
+            --graph {input.pan} \
+            --seq_lengths {input.lengths} \
+            --out {output}
+        """
+
+
 rule all:
     input:
         expand(rules.block_stats.output, comp=comps),
@@ -145,3 +162,4 @@ rule all:
         # expand(rules.block_positions.output, comp=comps),
         expand(rules.mutations_positions.output, comp=comps),
         expand(rules.minimal_synteny_units.output, comp=comps),
+        expand(rules.msu_dotplot.output, comp=comps),

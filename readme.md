@@ -65,10 +65,10 @@ The `block_stats.csv` file contains a list of all of the blocks in the graph wit
 - [x] block stats
 - [x] core alignments
 - [ ] detect non-syntenic duplications by gluing the paths
-  - [ ] produce list of Minimal Synteny Units (MSU)
+  - [x] produce list of Minimal Synteny Units (MSU)
   - [ ] produce MSU sequences and align with mafft
     - [ ] enumerate MSU mutations
-  - [ ] produce MSU dotplots to see ambiguous regions
+  - [x] produce MSU dotplots to see ambiguous regions
 - [ ] position in the genome for the mutations / indels
   - [ ] use the block positions dataframe already created, with `(iso, block_id, block_occ)` as index.
   - [ ] define a function to find location within the alignment on the sequence (add/remove indels to position).
