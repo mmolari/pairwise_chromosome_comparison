@@ -123,6 +123,19 @@ rule mutations_positions:
         """
 
 
+rule minimal_synteny_units:
+    input:
+        pan=rules.build_graph.output,
+    output:
+        "results/{comp}/msu/minimal_synteny_units.csv",
+    shell:
+        """
+        python scripts/synteny_units.py \
+            --graph {input.pan} \
+            --out {output}
+        """
+
+
 rule all:
     input:
         expand(rules.block_stats.output, comp=comps),
@@ -131,3 +144,4 @@ rule all:
         expand(rules.dotplot.output, comp=comps),
         # expand(rules.block_positions.output, comp=comps),
         expand(rules.mutations_positions.output, comp=comps),
+        expand(rules.minimal_synteny_units.output, comp=comps),
