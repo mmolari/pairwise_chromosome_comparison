@@ -152,6 +152,25 @@ rule msu_dotplot:
             --out {output}
         """
 
+rule msu_alignments:
+    input:
+        msu=rules.minimal_synteny_units.output,
+        pan=rules.build_graph.output,
+        lengths=rules.seq_lengths.output,
+    output:
+        aln_fld=directory("results/{comp}/msu/alignments"),
+        muts_plot="results/{comp}/msu/mutations.pdf",
+        info="results/{comp}/msu/info.csv",
+    shell:
+        """
+        python scripts/msu_alignments.py \
+            --msu {input.msu} \
+            --graph {input.pan} \
+            --seq_lengths {input.lengths} \
+            --out_aln_fld {output.aln_fld} \
+            --out_plot {output.muts_plot} \
+            --out_info {output.info}
+        """
 
 rule all:
     input:
@@ -161,5 +180,6 @@ rule all:
         expand(rules.dotplot.output, comp=comps),
         # expand(rules.block_positions.output, comp=comps),
         expand(rules.mutations_positions.output, comp=comps),
-        expand(rules.minimal_synteny_units.output, comp=comps),
+        # expand(rules.minimal_synteny_units.output, comp=comps),
         expand(rules.msu_dotplot.output, comp=comps),
+        expand(rules.msu_alignments.output, comp=comps)
