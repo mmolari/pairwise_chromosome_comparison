@@ -28,32 +28,11 @@ after activating the conda environment run the pipeline with:
 snakemake -c1 all
 ```
 
-## results
+## output
 
-For any given comparison, the pipeline produces the following results, stored in the `results/{comp_id}` folder.
+The output of the pipeline are described in [results](notes/results.md)
 
-### block statistics
-
-The `block_stats.csv` file contains a list of all of the blocks in the graph with summary statistics:
-
-|            | count | n. strains |    len | duplicated | core  | category   |
-| :--------- | ----: | ---------: | -----: | :--------- | :---- | :--------- |
-| OGIXJBTVTV |     2 |          2 | 326946 | False      | True  | core       |
-| XEVNWFKICB |     2 |          2 | 224824 | False      | True  | core       |
-| IRWDQBJGUJ |     2 |          2 | 224159 | False      | True  | core       |
-| YTFFFPIQSD |     1 |          1 |   1418 | False      | False | accessory  |
-| UZWIYCEDJP |     1 |          1 |    869 | False      | False | accessory  |
-| UJFECAATVC |    23 |          2 |   1055 | True       | False | duplicated |
-| NPESBINNJX |    21 |          2 |    142 | True       | False | duplicated |
-| NBPXZUNQOA |    14 |          2 |   3243 | True       | False | duplicated |
-
-- the block **count** is the total number of occurrences of the block in the two paths.
-- the block **n. of strains** is the number of strains in which the block appears, either one or two.
-- the block **length** is the length of the block consensus sequence.
-- the **duplicated** flag indicates whether the block occurrs twice in any path.
-- the **core** flag indicates block that are found exactly once in each genome.
-- the **category** value can be either *core*, *accessory* (for blocks that are found only once in a path but not the other) or *duplicated*
-
+![bandage](notes/assets/bandage.png)
 
 ## ToDo
 
@@ -64,17 +43,13 @@ The `block_stats.csv` file contains a list of all of the blocks in the graph wit
   - [x] add periodic boundary conditions
 - [x] block stats
 - [x] core alignments
-- [ ] detect non-syntenic duplications by gluing the paths
+- [x] detect non-syntenic duplications by gluing the paths
   - [x] produce list of Minimal Synteny Units (MSU)
-  - [ ] produce MSU sequences and align with mafft
-    - [ ] enumerate MSU mutations
+  - [x] produce MSU alignments
   - [x] produce MSU dotplots to see ambiguous regions
 - [ ] position in the genome for the mutations / indels
   - [ ] use the block positions dataframe already created, with `(iso, block_id, block_occ)` as index.
   - [ ] define a function to find location within the alignment on the sequence (add/remove indels to position).
   - [ ] check that it works for fwd/rev alignments (check 1-based indexing)
 - [x] block list with positions in the two genomes
-- [ ] note with better description of the results
-  - [ ] block positions
-  - [ ] graph export (gfa and sequences)
-  - [ ] core alignments and list of mutations
+- [x] note with better description of the results
