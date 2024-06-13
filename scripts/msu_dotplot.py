@@ -98,6 +98,7 @@ def create_figure(pan, seq_lengths, msu_dict, sign_dict, block_pos):
     Ly = seq_lengths[y_lab]
 
     msu_color, msu_n = {}, 0
+    msu_labelled = set()
     for i, (b, s, o) in enumerate(zip(Bx, Sx, Ox)):
         x = block_pos[x_lab][(b, s, o)]
         msu_x = msu_dict[(x_lab, b, s, o)]
@@ -119,6 +120,17 @@ def create_figure(pan, seq_lengths, msu_dict, sign_dict, block_pos):
             if (msu_x != 0) and (sign_x != sign_y):
                 continue
             orient = s == d
+            if not msu_x in msu_labelled:
+                ax.text(
+                    np.mean(x),
+                    np.mean(y),
+                    f"{msu_x}",
+                    fontsize="small",
+                    color=col,
+                    ha="center",
+                    va="top",
+                )
+                msu_labelled |= {msu_x}
             seg = su.Segment(x[0], x[1], y[0], y[1], orient, Lx, Ly)
             pbc_plot(seg, col, orient, ax)
 
@@ -158,7 +170,17 @@ def create_figure(pan, seq_lengths, msu_dict, sign_dict, block_pos):
     axs[1, 0].set_xlabel(f"{x_lab} (bp)")
     axs[1, 0].set_ylabel(f"{y_lab} (bp)")
 
+    # msu_legend(fig, msu_color)
+
     return fig, axs
+
+
+# def msu_legend(fig, msu_color):
+#     ax = fig.add_subplot(111)
+#     for msu, color in msu_color.items():
+#         ax.plot([], [], color=color, label=f"{msu}")
+#     ax.legend(loc="upper right", title="MSU", fontsize="small", title_fontsize="small")
+#     ax.axis("off")
 
 
 if __name__ == "__main__":
