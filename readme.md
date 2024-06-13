@@ -47,9 +47,9 @@ The output of the pipeline are described in [results](notes/results.md)
   - [x] produce list of Minimal Synteny Units (MSU)
   - [x] produce MSU alignments
   - [x] produce MSU dotplots to see ambiguous regions
-- [ ] position in the genome for the mutations / indels
-  - [ ] use the block positions dataframe already created, with `(iso, block_id, block_occ)` as index.
-  - [ ] define a function to find location within the alignment on the sequence (add/remove indels to position).
+- [x] position in the genome for the mutations / indels
+  - [x] use the block positions dataframe already created, with `(iso, block_id, block_occ)` as index.
+  - [x] define a function to find location within the alignment on the sequence (add/remove indels to position).
   - [ ] check that it works for fwd/rev alignments (check 1-based indexing)
 - [x] block list with positions in the two genomes
 - [x] note with better description of the results
